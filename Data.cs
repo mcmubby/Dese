@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Text.Json;
 using System.Collections.Generic;
 using System.Text;
+using Newtonsoft.Json;
 // using System.Collections;
 // using Newtonsoft.Json;
 
@@ -50,8 +51,8 @@ namespace httprequest
         {
             var dataUrl = $"read/{pluginId}/{collectionName}/{organizationId}";
             var response = await Client.GetAsync(dataUrl);
-            using var responseStream = await response.Content.ReadAsStreamAsync();
-            return await JsonSerializer.DeserializeAsync<JsonResponse>(responseStream);
+            var responseStream = await response.Content.ReadAsStringAsync();
+            return JsonConvert.DeserializeObject<JsonResponse>(responseStream);
         }
 
         public async Task PostData<TDataModel>(string collectionName, string organizationId, TDataModel dataModel)
@@ -66,7 +67,7 @@ namespace httprequest
             };
 
             var jsonBody = new StringContent(
-                JsonSerializer.Serialize(body),
+                System.Text.Json.JsonSerializer.Serialize(body),
                 Encoding.UTF8, "application/json"
             );
 
